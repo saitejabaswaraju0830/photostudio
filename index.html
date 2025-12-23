@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegance Photography | Premium Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a1a1a;
+            --accent: #d4af37;
+            --text-light: #f8f8f8;
+            --text-dark: #333;
+            --bg-light: #ffffff;
+            --bg-gray: #f9f9f9;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --transition: all 0.4s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://images.pexels.com/photos/2387793/pexels-photo-2387793.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') center/cover no-repeat;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.8rem;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
+        header p {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .login-trigger {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: var(--bg-light);
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.5s;
+        }
+
+        .modal-content h2 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .upload-section {
+            max-width: 700px;
+            margin: 80px auto;
+            padding: 50px;
+            background: var(--bg-light);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            display: none;
+        }
+
+        .upload-section.visible { display: block; animation: fadeIn 0.6s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .file-input-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f8f8;
+            padding: 25px 50px;
+            border: 3px dashed #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.2rem;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--accent);
+            background: #fffbe6;
+        }
+
+        #preview {
+            max-width: 100%;
+            max-height: 500px;
+            margin: 40px auto;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 15px;
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background: #c19a30;
+            transform: translateY(-3px);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 20px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--primary);
+        }
+
+        .about-text {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 100px;
+            font-size: 1.3rem;
+            color: #555;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 40px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-20px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 480px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover img { transform: scale(1.08); }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(231,76,60,0.9);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+        footer {
+            background: var(--primary);
+            color: var(--text-light);
+            text-align: center;
+            padding: 50px;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3.2rem; }
+            .gallery { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-trigger" onclick="openLoginModal()"></div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2>Owner Login</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button class="btn" onclick="login()">Login</button>
+            <button class="btn btn-danger" onclick="closeLoginModal()">Cancel</button>
+            <p id="loginError" style="color:red; margin-top:15px; display:none;">Incorrect credentials</p>
+        </div>
+    </div>
+
+    <header>
+        <h1>Elegance Photography</h1>
+        <p>Timeless artistry • Professional portraits • Capturing your story</p>
+    </header>
+
+    <div class="upload-section" id="uploadSection">
+        <h2>Upload New Capture</h2>
+        <div style="margin:30px 0;">
+            <input type="file" id="imageInput" accept="image/*" style="display:none;">
+            <label for="imageInput" class="file-input-label">
+                <i class="fas fa-cloud-upload-alt fa-3x"></i>
+                <span>Click to Select Image</span>
+            </label>
+        </div>
+        <button class="btn" onclick="uploadImage()">Upload to Gallery</button>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
+        <img id="preview" alt="Preview">
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">About Our Studio</h2>
+        <p class="about-text">
+            We specialize in premium portrait, event, wedding, and artistic photography. 
+            Every frame tells a unique story with elegance, emotion, and technical perfection.
+        </p>
+
+        <h2 class="section-title">Recent Captures</h2>
+        <div class="gallery" id="gallery"></div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Elegance Photography. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const encoded = ['cmVzdXlt', 'NTIwMnRlcmNlcw=='];
+
+        const CORRECT_USER = atob(encoded[0]).split('').reverse().join('');
+        const CORRECT_PASS = atob(encoded[1]).split('').reverse().join('');
+
+        const sampleImages = [
+            'https://img.freepik.com/free-photo/close-up-elegant-executive_1098-4078.jpg?semt=ais_hybrid&w=740&q=80',
+            'https://images-pw.pixieset.com/elementfield/61712776/_DSC9590-9e095bfc.jpg',
+            'https://www.viewbug.com/media/mediafiles/2015/11/03/60095595_large1300.jpg',
+            'https://www.ranjanb.com/web/image/10219-74265e74/Elegant%20Indian%20Woman%20in%20Traditional%20Clothing%2C%20featured%20in%20Madhura%20Dasgupta%27s%20Portfolio%20by%20Ranjan%20Bhattacharya%20Photography.webp',
+            'https://thelane.com/wp-content/uploads/2022/02/Sophie-Tim-Reedit-1-2200x1572.jpg',
+            'https://img.freepik.com/premium-photo/elegant-couple-walking-sunset-love-story-portrait-bride-groom-wedding-day_215842-4376.jpg',
+            'https://bidunart.com/wp-content/uploads/2020/04/Portrait183a.jpg',
+            'https://images.pexels.com/photos/31887517/pexels-photo-31887517/free-photo-of-artistic-black-and-white-portrait-of-a-woman.jpeg',
+            'https://shotkit.com/wp-content/uploads/2021/02/black_and_white_portraits_drew_hays.jpg'
+        ];
+
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        function login() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value;
+
+            if (user === CORRECT_USER && pass === CORRECT_PASS) {
+                closeLoginModal();
+                document.getElementById('uploadSection').classList.add('visible');
+                loadImages();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            document.getElementById('uploadSection').classList.remove('visible');
+            document.getElementById('imageInput').value = '';
+            document.getElementById('preview').style.display = 'none';
+            loadImages();
+        }
+
+        function uploadImage() {
+            const input = document.getElementById('imageInput');
+            const preview = document.getElementById('preview');
+
+            if (!input.files || !input.files[0]) {
+                alert('Please select an image.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+
+                let images = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
+                images.push(e.target.result);
+                localStorage.setItem('uploadedImages', JSON.stringify(images));
+
+                alert('Image uploaded successfully!');
+                loadImages();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        function deleteImage(index) {
+            if (confirm('Are you sure you want to delete this uploaded image?')) {
+                let images = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
+                images.splice(index, 1);
+                localStorage.setItem('uploadedImages', JSON.stringify(images));
+                loadImages();
+            }
+        }
+
+        function loadImages() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+
+            let uploaded = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
+            const isLoggedIn = document.getElementById('uploadSection').classList.contains('visible');
+
+            const allImages = [...uploaded.slice().reverse(), ...sampleImages];
+
+            allImages.forEach((src, displayIndex) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = 'Photography portfolio';
+                item.appendChild(img);
+
+                if (isLoggedIn && displayIndex < uploaded.length) {
+                    const originalIndex = uploaded.length - 1 - displayIndex;
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.innerHTML = '&times;';
+                    deleteBtn.onclick = () => deleteImage(originalIndex);
+                    item.appendChild(deleteBtn);
+                }
+
+                gallery.appendChild(item);
+            });
+
+            if (allImages.length === 0) {
+                gallery.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:1.4rem;">No images yet.</p>';
+            }
+        }
+
+        window.onload = loadImages;
+    </script>
+</body>
+</html>
