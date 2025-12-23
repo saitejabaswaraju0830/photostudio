@@ -167,14 +167,6 @@
             background: #c0392b;
         }
 
-        .btn-success {
-            background: #28a745;
-        }
-
-        .btn-success:hover {
-            background: #218838;
-        }
-
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -291,12 +283,6 @@
         <button class="btn" onclick="uploadImage()">Upload to Gallery</button>
         <button class="btn btn-danger" onclick="logout()">Logout</button>
         <img id="preview" alt="Preview">
-
-        <div id="adminTools" style="display:none; margin-top:40px;">
-            <button class="btn" onclick="exportImages()">Export All Uploaded Images</button>
-            <button class="btn btn-success" onclick="document.getElementById('importInput').click()">Import Images</button>
-            <input type="file" id="importInput" accept=".json" style="display:none;" onchange="importImages(event)">
-        </div>
     </div>
 
     <div class="container">
@@ -347,7 +333,6 @@
             if (user === CORRECT_USER && pass === CORRECT_PASS) {
                 closeLoginModal();
                 document.getElementById('uploadSection').classList.add('visible');
-                document.getElementById('adminTools').style.display = 'block';
                 loadImages();
             } else {
                 document.getElementById('loginError').style.display = 'block';
@@ -356,7 +341,6 @@
 
         function logout() {
             document.getElementById('uploadSection').classList.remove('visible');
-            document.getElementById('adminTools').style.display = 'none';
             document.getElementById('imageInput').value = '';
             document.getElementById('preview').style.display = 'none';
             loadImages();
@@ -376,9 +360,9 @@
                 preview.src = e.target.result;
                 preview.style.display = 'block';
 
-                let images = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
-                images.push(e.target.result);
-                localStorage.setItem('uploadedImages', JSON.stringify(images));
+                let uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
+                uploadedImages.push(e.target.result);
+                localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
 
                 alert('Image uploaded successfully!');
                 loadImages();
@@ -388,56 +372,21 @@
 
         function deleteImage(index) {
             if (confirm('Are you sure you want to delete this uploaded image?')) {
-                let images = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
-                images.splice(index, 1);
-                localStorage.setItem('uploadedImages', JSON.stringify(images));
+                let uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
+                uploadedImages.splice(index, 1);
+                localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
                 loadImages();
             }
-        }
-
-        function exportImages() {
-            let images = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
-            if (images.length === 0) {
-                alert('No uploaded images to export.');
-                return;
-            }
-            const dataStr = JSON.stringify(images);
-            const blob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'my-photography-images.json';
-            link.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function importImages(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (!Array.isArray(imported)) throw new Error();
-                    localStorage.setItem('uploadedImages', JSON.stringify(imported));
-                    alert('Images imported successfully!');
-                    loadImages();
-                } catch (err) {
-                    alert('Invalid file. Please upload a valid export file.');
-                }
-            };
-            reader.readAsText(file);
         }
 
         function loadImages() {
             const gallery = document.getElementById('gallery');
             gallery.innerHTML = '';
 
-            let uploaded = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
+            let uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
             const isLoggedIn = document.getElementById('uploadSection').classList.contains('visible');
 
-            const allImages = [...uploaded.slice().reverse(), ...sampleImages];
+            const allImages = [...uploadedImages.slice().reverse(), ...sampleImages];
 
             allImages.forEach((src, displayIndex) => {
                 const item = document.createElement('div');
@@ -448,8 +397,8 @@
                 img.alt = 'Photography portfolio';
                 item.appendChild(img);
 
-                if (isLoggedIn && displayIndex < uploaded.length) {
-                    const originalIndex = uploaded.length - 1 - displayIndex;
+                if (isLoggedIn && displayIndex < uploadedImages.length) {
+                    const originalIndex = uploadedImages.length - 1 - displayIndex;
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'delete-btn';
                     deleteBtn.innerHTML = '&times;';
