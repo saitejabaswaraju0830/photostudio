@@ -150,7 +150,7 @@
             font-family: 'Playfair Display', serif;
             font-size: 3.2rem;
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 60px;
             color: var(--primary);
         }
 
@@ -164,8 +164,9 @@
 
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 40px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 0 20px;
         }
 
         .gallery-item {
@@ -174,6 +175,7 @@
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: var(--transition);
+            aspect-ratio: 1 / 1;
         }
 
         .gallery-item:hover {
@@ -183,12 +185,14 @@
 
         .gallery-item img {
             width: 100%;
-            height: 480px;
+            height: 100%;
             object-fit: cover;
             transition: var(--transition);
         }
 
-        .gallery-item:hover img { transform: scale(1.08); }
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
 
         .delete-btn {
             position: absolute;
@@ -219,8 +223,11 @@
         }
 
         @media (max-width: 768px) {
-            h1 { font-size: 3.2rem; }
-            .gallery { grid-template-columns: 1fr; }
+            h1 { font-size: 3.5rem; }
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
         }
     </style>
 </head>
@@ -247,7 +254,10 @@
     <div class="upload-section" id="uploadSection">
         <h2>Add New Image URL</h2>
         <div style="margin:30px 0;">
-            <input type="url" id="imageUrlInput" placeholder="Paste image URL here (e.g. https://example.com/image.jpg)">
+            <input type="url" id="imageUrlInput" placeholder="Paste ImgBB link (e.g. https://ibb.co/q3zYTg5q)">
+            <p style="font-size:0.9rem; color:#666; margin-top:8px;">
+                You can paste the preview link[](https://ibb.co/...) — it will be automatically converted to the direct image link.
+            </p>
         </div>
         <button class="btn" onclick="addImageUrl()">Add to Gallery</button>
         <button class="btn btn-danger" onclick="logout()">Logout</button>
@@ -313,26 +323,31 @@
             loadImages();
         }
 
+        function convertImgbbPreviewToDirect(url) {
+            const match = url.match(/ibb\.co\/([a-zA-Z0-9]+)/);
+            if (match) {
+                return `https://i.ibb.co/${match[1]}/image.jpg`;
+            }
+            return url;
+        }
+
         function addImageUrl() {
             const urlInput = document.getElementById('imageUrlInput');
-            const url = urlInput.value.trim();
+            let url = urlInput.value.trim();
 
             if (!url) {
-                alert('Please paste a valid image URL.');
+                alert('Please paste an image URL.');
                 return;
             }
 
-            if (!url.match(/\.(jpeg|jpg|gif|png|webp)$/i) && !url.includes('img.freepik.com') && !url.includes('pexels.com') && !url.includes('unsplash.com')) {
-                if (!confirm('This URL does not look like a direct image link. It may not display correctly. Continue anyway?')) {
-                    return;
-                }
-            }
+            url = convertImgbbPreviewToDirect(url);
 
             let customUrls = JSON.parse(localStorage.getItem('customImageUrls') || '[]');
-            customUrls.push(url);
+            customUrls.unshift(url);
+
             localStorage.setItem('customImageUrls', JSON.stringify(customUrls));
 
-            alert('Image URL added successfully!');
+            alert('Image added successfully!\nDirect link used: ' + url);
             urlInput.value = '';
             loadImages();
         }
@@ -353,7 +368,7 @@
             let customUrls = JSON.parse(localStorage.getItem('customImageUrls') || '[]');
             const isLoggedIn = document.getElementById('uploadSection').classList.contains('visible');
 
-            const allImages = [...customUrls.slice().reverse(), ...sampleImages];
+            const allImages = [...customUrls, ...sampleImages];
 
             allImages.forEach((src, displayIndex) => {
                 const item = document.createElement('div');
@@ -362,18 +377,16 @@
                 const img = document.createElement('img');
                 img.src = src;
                 img.alt = 'Photography portfolio';
-                img.onerror = function() {
-                    this.src = 'https://via.placeholder.com/480x480?text=Image+Not+Found';
-                    this.alt = 'Broken image link';
+                img.onerror = () => {
+                    img.src = 'https://via.placeholder.com/480x480?text=Image+Not+Found';
                 };
                 item.appendChild(img);
 
                 if (isLoggedIn && displayIndex < customUrls.length) {
-                    const originalIndex = customUrls.length - 1 - displayIndex;
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'delete-btn';
                     deleteBtn.innerHTML = '&times;';
-                    deleteBtn.onclick = () => deleteImage(originalIndex);
+                    deleteBtn.onclick = () => deleteImage(displayIndex);
                     item.appendChild(deleteBtn);
                 }
 
