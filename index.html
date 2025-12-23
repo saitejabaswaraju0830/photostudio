@@ -256,7 +256,7 @@
         <div style="margin:30px 0;">
             <input type="url" id="imageUrlInput" placeholder="Paste ImgBB link (e.g. https://ibb.co/q3zYTg5q)">
             <p style="font-size:0.9rem; color:#666; margin-top:8px;">
-                You can paste the preview link[](https://ibb.co/...) — it will be automatically converted to the direct image link.
+                Paste the preview link[](https://ibb.co/...) — it will be automatically converted to the direct image link.
             </p>
         </div>
         <button class="btn" onclick="addImageUrl()">Add to Gallery</button>
@@ -283,7 +283,7 @@
         const CORRECT_USER = atob(encoded[0]).split('').reverse().join('');
         const CORRECT_PASS = atob(encoded[1]).split('').reverse().join('');
 
-        const sampleImages = [
+        let allImages = [
             'https://img.freepik.com/free-photo/close-up-elegant-executive_1098-4078.jpg?semt=ais_hybrid&w=740&q=80',
             'https://images-pw.pixieset.com/elementfield/61712776/_DSC9590-9e095bfc.jpg',
             'https://www.viewbug.com/media/mediafiles/2015/11/03/60095595_large1300.jpg',
@@ -342,21 +342,16 @@
 
             url = convertImgbbPreviewToDirect(url);
 
-            let customUrls = JSON.parse(localStorage.getItem('customImageUrls') || '[]');
-            customUrls.unshift(url);
+            allImages.unshift(url);
 
-            localStorage.setItem('customImageUrls', JSON.stringify(customUrls));
-
-            alert('Image added successfully!\nDirect link used: ' + url);
+            alert('Image added successfully and placed at the top!');
             urlInput.value = '';
             loadImages();
         }
 
         function deleteImage(index) {
-            if (confirm('Are you sure you want to delete this image?')) {
-                let customUrls = JSON.parse(localStorage.getItem('customImageUrls') || '[]');
-                customUrls.splice(index, 1);
-                localStorage.setItem('customImageUrls', JSON.stringify(customUrls));
+            if (confirm('Are you sure you want to permanently delete this image from the gallery?')) {
+                allImages.splice(index, 1);
                 loadImages();
             }
         }
@@ -365,10 +360,7 @@
             const gallery = document.getElementById('gallery');
             gallery.innerHTML = '';
 
-            let customUrls = JSON.parse(localStorage.getItem('customImageUrls') || '[]');
             const isLoggedIn = document.getElementById('uploadSection').classList.contains('visible');
-
-            const allImages = [...customUrls, ...sampleImages];
 
             allImages.forEach((src, displayIndex) => {
                 const item = document.createElement('div');
@@ -382,7 +374,7 @@
                 };
                 item.appendChild(img);
 
-                if (isLoggedIn && displayIndex < customUrls.length) {
+                if (isLoggedIn && displayIndex < allImages.length - sampleImages.length + customUrlsFromBefore.length) {
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'delete-btn';
                     deleteBtn.innerHTML = '&times;';
